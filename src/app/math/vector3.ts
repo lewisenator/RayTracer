@@ -1,13 +1,14 @@
 export class Vector3 {
-    x: number = 0;
-    y: number = 0;
-    z: number = 0;
+    public x: number = 0;
+    public y: number = 0;
+    public z: number = 0;
 
     constructor();
+    constructor(x: number, y: number, z: number);
     constructor(x?: number, y?: number, z?: number) {
-        this.x = x ? x : this.x;
-        this.y = y ? y : this.y;
-        this.z = z ? z : this.z;
+        this.x = x || this.x;
+        this.y = y || this.y;
+        this.z = z || this.z;
     }
 
     public length(): number {
@@ -16,54 +17,70 @@ export class Vector3 {
             this.z * this.z);
     }
 
-    public normalize() {
+    public normalize(): Vector3 {
         let ratio = 1.0 / this.length();
 
         this.x *= ratio;
         this.y *= ratio;
         this.z *= ratio;
+
+        return this;
     }
 
-    public add(other: Vector3) {
-        this.x += other.x;
-        this.y += other.y;
-        this.z += other.z;
+    public plus(other: Vector3): Vector3 {
+        let result = this.clone();
+        result.x += other.x;
+        result.y += other.y;
+        result.z += other.z;
+        return result;
     }
 
-    public minus(other: Vector3) {
-        this.x -= other.x;
-        this.y -= other.y;
-        this.z -= other.z;
+    public minus(other: Vector3): Vector3 {
+        let result = this.clone();
+        result.x -= other.x;
+        result.y -= other.y;
+        result.z -= other.z;
+        return result;
     }
 
-    public times(other: Vector3 | number) {
+    public times(other: Vector3 | number): Vector3 {
+        let result = this.clone();
         if (other instanceof Vector3) {
-            this.x *= other.x;
-            this.y *= other.y;
-            this.z *= other.z;
+            result.x *= other.x;
+            result.y *= other.y;
+            result.z *= other.z;
         } else if (typeof other === "number") {
-            this.x *= other;
-            this.y *= other;
-            this.z *= other;
+            result.x *= other;
+            result.y *= other;
+            result.z *= other;
         }
+        return result;
     }
 
-    public divide(other: Vector3 | number) {
+    public divide(other: Vector3 | number): Vector3 {
+        let result = this.clone();
         if (other instanceof Vector3) {
-            this.x /= other.x;
-            this.y /= other.y;
-            this.z /= other.z;
+            result.x /= other.x;
+            result.y /= other.y;
+            result.z /= other.z;
         } else if (typeof other === "number") {
-            this.x /= other;
-            this.y /= other;
-            this.z /= other;
+            result.x /= other;
+            result.y /= other;
+            result.z /= other;
         }
+        return result;
     }
 
     public dot(other: Vector3): number {
         return this.x * other.x +
                 this.y * other.y +
                 this.z * other.z;
+    }
+
+    public static dot(a: Vector3, b: Vector3): number {
+        return a.x * b.x +
+            a.y * b.y +
+            a.z * b.z;
     }
 
     public cross(other: Vector3): Vector3 {
