@@ -117,4 +117,11 @@ export class Vector3 {
     public static from(x: number, y: number, z: number): Vector3 {
         return new Vector3(x, y, z);
     }
+
+    public static random(): Vector3 {
+        return Vector3.from(
+            2.0 * Math.random() - 1.0,
+            2.0 * Math.random() - 1.0,
+            2.0 * Math.random() - 1.0)
+    }
 }
