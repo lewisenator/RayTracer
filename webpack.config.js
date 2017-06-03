@@ -8,6 +8,7 @@ const extractSass = new ExtractTextPlugin({
 });
 
 module.exports = {
+    devtool: "source-map",
     entry: ['./src/app/index.ts', './src/assets/styles/style.scss'],
     output: {
         filename: "bundle.[chunkhash].js",

@@ -11,6 +11,21 @@ export class Vector3 {
         this.z = z || this.z;
     }
 
+    public withX(x: number): Vector3 {
+        this.x = x;
+        return this;
+    }
+
+    public withY(y: number): Vector3 {
+        this.y = y;
+        return this;
+    }
+
+    public withZ(z: number): Vector3 {
+        this.z = z;
+        return this;
+    }
+
     public length(): number {
         return Math.sqrt(this.x * this.x +
             this.y * this.y +
@@ -97,5 +112,9 @@ export class Vector3 {
         result.y = this.y;
         result.z = this.z;
         return result;
+    }
+
+    public static from(x: number, y: number, z: number): Vector3 {
+        return new Vector3(x, y, z);
     }
 }
