@@ -43,47 +43,33 @@ export class Vector3 {
     }
 
     public plus(other: Vector3): Vector3 {
-        let result = this.clone();
-        result.x += other.x;
-        result.y += other.y;
-        result.z += other.z;
-        return result;
+        return new Vector3(
+            this.x + other.x,
+            this.y + other.y,
+            this.z + other.z);
     }
 
     public minus(other: Vector3): Vector3 {
-        let result = this.clone();
-        result.x -= other.x;
-        result.y -= other.y;
-        result.z -= other.z;
-        return result;
+        return new Vector3(
+            this.x - other.x,
+            this.y - other.y,
+            this.z - other.z);
     }
 
     public times(other: Vector3 | number): Vector3 {
-        let result = this.clone();
         if (other instanceof Vector3) {
-            result.x *= other.x;
-            result.y *= other.y;
-            result.z *= other.z;
-        } else if (typeof other === "number") {
-            result.x *= other;
-            result.y *= other;
-            result.z *= other;
+            return new Vector3(this.x * other.x, this.y * other.y, this.z * other.z);
         }
-        return result;
+        // else number
+        return new Vector3(this.x * other, this.y * other, this.z * other);
     }
 
     public divide(other: Vector3 | number): Vector3 {
-        let result = this.clone();
         if (other instanceof Vector3) {
-            result.x /= other.x;
-            result.y /= other.y;
-            result.z /= other.z;
-        } else if (typeof other === "number") {
-            result.x /= other;
-            result.y /= other;
-            result.z /= other;
+            return new Vector3(this.x / other.x, this.y / other.y, this.z / other.z);
         }
-        return result;
+        // else number
+        return new Vector3(this.x / other, this.y / other, this.z / other);
     }
 
     public dot(other: Vector3): number {
@@ -107,11 +93,7 @@ export class Vector3 {
     }
 
     public clone(): Vector3 {
-        let result = new Vector3();
-        result.x = this.x;
-        result.y = this.y;
-        result.z = this.z;
-        return result;
+        return new Vector3(this.x, this.y, this.z);
     }
 
     public static from(x: number, y: number, z: number): Vector3 {

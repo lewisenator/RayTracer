@@ -5,10 +5,12 @@ import {EntityManager} from "./entity-manager";
 import {Camera} from "./camera";
 import {Diffuse} from "./materials/diffuse";
 import {Metal} from "./materials/metal";
+import {Dialectric} from "./materials/dialectric";
 
 const minZ = 0.0001;
-const maxZ = 1000;
+const maxZ = 2000;
 const samplesPerPixel = 50;
+const maxBounces = 50;
 
 export class Demo {
     canvas: HTMLCanvasElement;
@@ -33,13 +35,14 @@ export class Demo {
 
         let camera = new Camera();
         camera.aspectRatio = width / height;
-        camera.zoom = 1.0;
+        camera.zoom = 0.9;
 
-        let sphere1 = new Sphere(Vector3.from(-105, 0, -250.0), 50.0, new Metal(Vector3.from(0.8, 0.7, 0.7)));
-        let sphere2 = new Sphere(Vector3.from(0, 0, -250.0), 50.0, new Diffuse(Vector3.from(0.3, 0.3, 0.9)));
-        let sphere3 = new Sphere(Vector3.from(105, 0, -250.0), 50.0, new Diffuse(Vector3.from(0.4, 0.9, 0.9)));
+        let sphere1 = new Sphere(Vector3.from(-110, 10, -230.0), 50.0, new Metal(Vector3.from(0.8, 0.7, 0.7), 0.1));
+        let sphere2 = new Sphere(Vector3.from(0, 30, -250.0), 50.0, new Diffuse(Vector3.from(0.3, 0.3, 0.9)));
+        let sphere3 = new Sphere(Vector3.from(110, 50, -270.0), 50.0, new Diffuse(Vector3.from(0.6, 0.9, 0.9)));
+        let sphere4 = new Sphere(Vector3.from(130, -10, -180.0), 50.0, new Dialectric(1.3, 0.0));
 
-        let entityManager = new EntityManager(sphere1, sphere2, sphere3);
+        let entityManager = new EntityManager(sphere1, sphere2, sphere3, sphere4);
 
         var imageData = this.context.createImageData(width, height);
 
@@ -71,26 +74,28 @@ export class Demo {
     }
 
     private color(ray: Ray, entityManager: EntityManager, depth: number): Vector3 {
-        let direction = ray.direction.normalize();
-
-        // sky
-        let t = 0.5 * direction.y + 1.0;
-        let result = Vector3.from(0.2, 0.5, 1.0).times(t * 255);
-
-        // ground
-        if (direction.y < -0.1) {
-            let t = 0.5 * direction.y + 1.0;
-            result = Vector3.from(0.2, 0.8, 0.2).times(t * 255);
-        }
+        let result: Vector3;
 
         let hit = entityManager.hit(ray, minZ, maxZ);
         if (hit != null) {
             result = Vector3.from(0, 0, 0);
-            if (depth < 50) {
+            if (depth < maxBounces) {
                 let scattered = hit.material.scatter(ray, hit);
                 if (scattered != null) {
                     result = hit.material.attenuation.times(this.color(scattered, entityManager, depth + 1));
                 }
+            }
+        } else {
+            let direction = ray.direction.normalize();
+
+            if (direction.y < -0.1) {
+                // ground
+                let t = 0.5 * direction.y + 1.0;
+                result = Vector3.from(0.2, 0.8, 0.2).times(t * 255);
+            } else {
+                // sky
+                let t = 0.5 * direction.y + 1.0;
+                result = Vector3.from(0.2, 0.5, 1.0).times(t * 255);
             }
         }
 

@@ -16,7 +16,7 @@ export class Sphere extends Entity {
         super();
         this.center = center || new Vector3();
         this.radius = radius || 0;
-        this.material = material || new Diffuse(Vector3.from(0.8, 0.3, 0.3))
+        this.material = material || new Diffuse(Vector3.from(0.8, 0.3, 0.3));
     }
 
     public hit(ray: Ray, minDepth: number, maxDepth: number): Hit {
