@@ -9,8 +9,8 @@ import {Dialectric} from "./materials/dialectric";
 
 const minZ = 0.0001;
 const maxZ = 2000;
-const samplesPerPixel = 50;
-const maxBounces = 50;
+const samplesPerPixel = 20;
+const maxBounces = 20;
 
 export class Demo {
     canvas: HTMLCanvasElement;
@@ -33,14 +33,19 @@ export class Demo {
         let width = this.canvas.width;
         let height = this.canvas.height;
 
-        let camera = new Camera();
-        camera.aspectRatio = width / height;
-        camera.zoom = 0.9;
+        let eye = new Vector3(0, 0, 0);
+        let lookat = new Vector3(0, 0, -1);
+        let up = new Vector3(0, 1, 0);
+        let verticalFOV = 90;
+        let aspectRatio = width / height;
+        let aperture = 0.00000001;
+        let focalDistance = 1;
+        let camera = new Camera(eye, lookat, up, verticalFOV, aspectRatio, aperture, focalDistance);
 
         let sphere1 = new Sphere(Vector3.from(-110, 10, -230.0), 50.0, new Metal(Vector3.from(0.8, 0.7, 0.7), 0.1));
         let sphere2 = new Sphere(Vector3.from(0, 30, -250.0), 50.0, new Diffuse(Vector3.from(0.3, 0.3, 0.9)));
         let sphere3 = new Sphere(Vector3.from(110, 50, -270.0), 50.0, new Diffuse(Vector3.from(0.6, 0.9, 0.9)));
-        let sphere4 = new Sphere(Vector3.from(130, -10, -180.0), 50.0, new Dialectric(1.3, 0.0));
+        let sphere4 = new Sphere(Vector3.from(-30, -20, -180.0), 50.0, new Dialectric(1.3, 0.0));
 
         let entityManager = new EntityManager(sphere1, sphere2, sphere3, sphere4);
 

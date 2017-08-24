@@ -2,54 +2,57 @@ import {Vector3} from "./math/vector3";
 import {Ray} from "./math/ray";
 
 export class Camera {
+    private lowerLeft = Vector3.from(0, 0, 0);
 
-    public origin: Vector3 = Vector3.from(0, 0, 0);
+    private horizontal: Vector3;
+    private vertical: Vector3;
 
-    private _aspectRatio: number = 3.0 / 4.0;
-    private _zoom: number = 1.0;
+    private u: Vector3;
+    private v: Vector3;
+    private w: Vector3;
 
-    private _scale: number;
-    private _width: number;
-    private _height: number;
-    private _leftStart: number;
-    private _bottomStart: number;
 
-    constructor() {
-        this.recalculate();
+    private lensRadius: number;
+
+    constructor(private eye: Vector3,
+                private lookat: Vector3,
+                private up: Vector3,
+                private verticalFOV: number,
+                private aspectRatio: number,
+                private aperture: number,
+                private focalDistance: number) {
+        this.lensRadius = aperture / 2;
+
+        let theta = verticalFOV * Math.PI / 180;
+        let halfHeight = Math.tan(theta / 2);
+        let halfWidth = aspectRatio * halfHeight;
+
+        this.w = eye.minus(lookat).normalize();
+        this.u = up.cross(this.w).normalize();
+        this.v = this.w.cross(this.u);
+
+        this.lowerLeft = eye
+            .minus(this.u.times(focalDistance).times(halfWidth))
+            .minus(this.v.times(focalDistance).times(halfHeight))
+            .minus(this.w.times(focalDistance));
+
+        this.horizontal = this.u.times(focalDistance).times(halfWidth).times(2);
+        this.vertical = this.v.times(focalDistance).times(halfHeight).times(2);
+
     }
 
-    public set aspectRatio(aspectRatio: number) {
-        this._aspectRatio = aspectRatio;
-        this.recalculate();
-    }
+    public rayAt(s: number, t: number): Ray {
+        let rd = Vector3.random().times(this.lensRadius);
+        let offsetU = this.u.times(rd.x);
+        let offsetV = this.v.times(rd.y);
+        let totalOffset = offsetU.plus(offsetV);
 
-    public get aspectRatio() {
-        return this._aspectRatio;
-    }
+        let direction = this.lowerLeft
+            .plus(this.horizontal.times(s))
+            .plus(this.vertical.times(t))
+            .minus(this.eye)
+            .minus(totalOffset);
 
-    public set zoom(zoom: number) {
-        this._zoom = zoom;
-        this.recalculate();
-    }
-
-    public get zoom() {
-        return this._zoom;
-    }
-
-    private recalculate() {
-        this._scale = 1.0 / this._zoom;
-        this._width = this._scale * this._aspectRatio;
-        this._height = this._scale;
-        this._leftStart = -this._width / 2.0;
-        this._bottomStart = -this._height / 2.0;
-    }
-
-    public rayAt(u: number, v: number): Ray {
-        let lightDirection = new Vector3(
-            this._leftStart + this._width * u,
-            this._bottomStart + this._height * v,
-            -1);
-
-        return new Ray(this.origin, lightDirection);
+        return new Ray(this.eye.plus(totalOffset), direction);
     }
 }
